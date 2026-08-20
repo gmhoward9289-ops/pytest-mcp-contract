@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.6
+
+- `assert_tool_output_schemas_match`, `snapshot_tool_output_schemas`, `tool_output_schema`
+- `python -m mcp_contract snapshot --output` for structured handler output schemas
+- `format_schema_drift` / `format_tool_output_schema_drift` shared drift reporting
+
 ## 0.1.5
 
 - `format_tool_input_schema_drift` — field-level change paths plus unified diff on schema mismatch

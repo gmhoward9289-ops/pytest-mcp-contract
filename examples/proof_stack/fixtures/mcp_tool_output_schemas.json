@@ -1,0 +1,44 @@
+{
+  "demo_enqueue": {
+    "properties": {
+      "result": {
+        "additionalProperties": true,
+        "title": "Result",
+        "type": "object"
+      }
+    },
+    "required": [
+      "result"
+    ],
+    "title": "demo_enqueueOutput",
+    "type": "object"
+  },
+  "demo_search": {
+    "properties": {
+      "result": {
+        "additionalProperties": true,
+        "title": "Result",
+        "type": "object"
+      }
+    },
+    "required": [
+      "result"
+    ],
+    "title": "demo_searchOutput",
+    "type": "object"
+  },
+  "demo_status": {
+    "properties": {
+      "result": {
+        "additionalProperties": true,
+        "title": "Result",
+        "type": "object"
+      }
+    },
+    "required": [
+      "result"
+    ],
+    "title": "demo_statusOutput",
+    "type": "object"
+  }
+}

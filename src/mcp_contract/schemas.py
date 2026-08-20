@@ -1,4 +1,4 @@
-"""Snapshot and compare MCP tool input JSON schemas from in-memory registration."""
+"""Snapshot and compare MCP tool input/output JSON schemas from in-memory registration."""
 
 from __future__ import annotations
 
@@ -18,10 +18,29 @@ def tool_input_schema(server: Any, name: str) -> dict[str, Any]:
     raise TypeError(f"tool {name!r} parameters is not a dict: {type(params)!r}")
 
 
+def tool_output_schema(server: Any, name: str) -> dict[str, Any]:
+    """Structured output JSON schema for one registered tool."""
+    tool = get_registered_tool(server, name)
+    schema = tool.output_schema
+    if schema is None:
+        raise TypeError(f"tool {name!r} has no output_schema")
+    if isinstance(schema, dict):
+        return schema
+    raise TypeError(f"tool {name!r} output_schema is not a dict: {type(schema)!r}")
+
+
 def snapshot_tool_input_schemas(server: Any) -> dict[str, dict[str, Any]]:
     """All registered tool input schemas, sorted by tool name."""
     return {
         name: tool_input_schema(server, name)
+        for name in sorted(list_tool_names(server))
+    }
+
+
+def snapshot_tool_output_schemas(server: Any) -> dict[str, dict[str, Any]]:
+    """All registered tool output schemas, sorted by tool name."""
+    return {
+        name: tool_output_schema(server, name)
         for name in sorted(list_tool_names(server))
     }
 
@@ -52,7 +71,7 @@ def _field_changes(expected: Any, actual: Any, path: str = "$") -> list[str]:
     return [f"~ {path}: {actual!r} (expected {expected!r})"]
 
 
-def format_tool_input_schema_drift(
+def format_schema_drift(
     expected: dict[str, Any],
     actual: dict[str, Any],
 ) -> str:
@@ -75,14 +94,31 @@ def format_tool_input_schema_drift(
     return "\n".join(parts).rstrip()
 
 
-def assert_tool_input_schemas_match(
+def format_tool_input_schema_drift(
+    expected: dict[str, Any],
+    actual: dict[str, Any],
+) -> str:
+    """Backward-compatible alias for :func:`format_schema_drift`."""
+    return format_schema_drift(expected, actual)
+
+
+def format_tool_output_schema_drift(
+    expected: dict[str, Any],
+    actual: dict[str, Any],
+) -> str:
+    """Alias for output schema drift reporting."""
+    return format_schema_drift(expected, actual)
+
+
+def _assert_tool_schemas_match(
     server: Any,
     expected: dict[str, dict[str, Any]],
     *,
-    tools: set[str] | None = None,
+    tools: set[str] | None,
+    snapshot_fn,
+    drift_label: str,
 ) -> None:
-    """Fail when any pinned tool's input schema differs from the snapshot."""
-    actual = snapshot_tool_input_schemas(server)
+    actual = snapshot_fn(server)
     want_names = sorted(tools if tools is not None else expected.keys())
     missing = set(want_names) - set(actual)
     assert not missing, f"tools not registered: {sorted(missing)}"
@@ -94,8 +130,40 @@ def assert_tool_input_schemas_match(
             continue
         if _canonical(actual[name]) != _canonical(expected[name]):
             errors.append(
-                f"{name}: schema drift\n"
-                f"{format_tool_input_schema_drift(expected[name], actual[name])}"
+                f"{name}: {drift_label}\n"
+                f"{format_schema_drift(expected[name], actual[name])}"
             )
     if errors:
         raise AssertionError("\n---\n".join(errors))
+
+
+def assert_tool_input_schemas_match(
+    server: Any,
+    expected: dict[str, dict[str, Any]],
+    *,
+    tools: set[str] | None = None,
+) -> None:
+    """Fail when any pinned tool's input schema differs from the snapshot."""
+    _assert_tool_schemas_match(
+        server,
+        expected,
+        tools=tools,
+        snapshot_fn=snapshot_tool_input_schemas,
+        drift_label="input schema drift",
+    )
+
+
+def assert_tool_output_schemas_match(
+    server: Any,
+    expected: dict[str, dict[str, Any]],
+    *,
+    tools: set[str] | None = None,
+) -> None:
+    """Fail when any pinned tool's output schema differs from the snapshot."""
+    _assert_tool_schemas_match(
+        server,
+        expected,
+        tools=tools,
+        snapshot_fn=snapshot_tool_output_schemas,
+        drift_label="output schema drift",
+    )

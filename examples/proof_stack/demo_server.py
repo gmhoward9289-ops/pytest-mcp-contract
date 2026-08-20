@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from typing import Any, Dict
+
 from mcp.server import MCPServer
 from mcp.types import ToolAnnotations
 
@@ -22,15 +24,15 @@ _WRITE = ToolAnnotations(
 
 
 @server.tool(name="demo_status", annotations=_READ_ONLY)
-def demo_status() -> dict:
+async def demo_status() -> Dict[str, Any]:
     return {"ok": True}
 
 
 @server.tool(name="demo_search", annotations=_READ_ONLY)
-def demo_search(query: str, limit: int = 5) -> dict:
+async def demo_search(query: str, limit: int = 5) -> Dict[str, Any]:
     return {"ok": True, "query": query, "limit": limit}
 
 
 @server.tool(name="demo_enqueue", annotations=_WRITE)
-def demo_enqueue(task: str) -> dict:
+async def demo_enqueue(task: str) -> Dict[str, Any]:
     return {"ok": True, "task": task}

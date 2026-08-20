@@ -35,6 +35,7 @@ pytest -q
 | `demo_server.py` | Tiny in-memory `MCPServer` with three `demo_*` tools |
 | `fixtures/agent_check.jsonl` | Synthetic session: `demo_status` then `demo_search` |
 | `fixtures/mcp_tool_schemas.json` | Pinned input schemas (refresh with snapshot command below) |
+| `fixtures/mcp_tool_output_schemas.json` | Pinned output schemas (`snapshot --output`) |
 | `test_mcp_contract.py` | Registry, annotation, schema, and handler round-trip tests |
 | `test_session_trace.py` | Session order/input assertions + henhouse parse check |
 
@@ -44,6 +45,7 @@ After intentional handler signature changes:
 
 ```bash
 python -m mcp_contract snapshot fixtures/mcp_tool_schemas.json --module demo_server
+python -m mcp_contract snapshot fixtures/mcp_tool_output_schemas.json --output --module demo_server
 ```
 
 ## Record your own session

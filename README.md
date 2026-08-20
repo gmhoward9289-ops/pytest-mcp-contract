@@ -11,7 +11,7 @@ This is **not** protocol conformance. It does not wrap `npx @modelcontextprotoco
 ```bash
 pip install pytest-mcp-contract
 # or pinned tag:
-pip install git+https://github.com/gmhoward9289-ops/pytest-mcp-contract@v0.1.5
+pip install git+https://github.com/gmhoward9289-ops/pytest-mcp-contract@v0.1.6
 ```
 
 For in-memory registry access against the MCP Python SDK:
@@ -94,6 +94,24 @@ python -m mcp_contract snapshot tests/fixtures/mcp_schemas.json --module swamp_o
 ```
 
 On drift, failures show dotted field paths (`properties.repo.type`) and a unified diff — not two full JSON blobs.
+
+### Output schema snapshots
+
+Pin structured handler output JSON schemas the same way (MCP SDK `Tool.output_schema`):
+
+```python
+from mcp_contract.schemas import assert_tool_output_schemas_match
+
+def test_output_schemas(mcp_server):
+    expected = json.loads(Path("tests/fixtures/mcp_output_schemas.json").read_text())
+    assert_tool_output_schemas_match(mcp_server, expected, tools=set(expected))
+```
+
+Refresh:
+
+```text
+python -m mcp_contract snapshot tests/fixtures/mcp_output_schemas.json --output --module swamp_ops.server
+```
 
 ### Publish health
 
