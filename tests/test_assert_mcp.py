@@ -8,9 +8,11 @@ import pytest
 
 from mcp_contract.assert_mcp import (
     assert_call_equals,
+    assert_non_readonly_tools_named,
     assert_subset_named,
     assert_tool_annotated_read_only,
     assert_tools_named,
+    non_readonly_tool_names,
 )
 
 SWAMP_TOOLS = {
@@ -75,3 +77,32 @@ def test_assert_call_equals():
     assert_call_equals("hi", "hi")
     with pytest.raises(AssertionError):
         assert_call_equals("hi", "bye")
+
+
+def test_non_readonly_tool_names_ignores_unmarked_and_read_only():
+    tools = {
+        "read": SimpleNamespace(annotations=SimpleNamespace(readOnlyHint=True)),
+        "write": SimpleNamespace(annotations=SimpleNamespace(readOnlyHint=False)),
+        "legacy": SimpleNamespace(annotations=SimpleNamespace(read_only_hint=False)),
+        "unmarked": SimpleNamespace(annotations=None),
+    }
+    assert non_readonly_tool_names(tools) == {"write", "legacy"}
+
+
+def test_assert_non_readonly_tools_named_exact_match():
+    tools = {
+        "write": SimpleNamespace(annotations=SimpleNamespace(readOnlyHint=False)),
+    }
+    assert_non_readonly_tools_named(tools, {"write"})
+
+
+def test_assert_non_readonly_tools_named_reports_missing_and_extra():
+    tools = {
+        "write_a": SimpleNamespace(annotations=SimpleNamespace(readOnlyHint=False)),
+        "write_b": SimpleNamespace(annotations=SimpleNamespace(readOnlyHint=False)),
+    }
+    with pytest.raises(AssertionError, match="missing=") as exc:
+        assert_non_readonly_tools_named(tools, {"write_a"})
+    msg = str(exc.value)
+    assert "write_b" in msg
+    assert "extra=" in msg

@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "pytest-mcp-contract"
-version = "0.1.0"
+dynamic = ["version"]
 description = "pytest plugin for domain MCP tool contracts (names, annotations, call results). Not protocol conformance."
 readme = "README.md"
 requires-python = ">=3.10"
@@ -24,12 +24,20 @@ classifiers = [
 ]
 dependencies = ["pytest>=8.0"]
 
+[project.urls]
+Homepage = "https://github.com/gmhoward9289-ops/pytest-mcp-contract"
+Repository = "https://github.com/gmhoward9289-ops/pytest-mcp-contract"
+Issues = "https://github.com/gmhoward9289-ops/pytest-mcp-contract/issues"
+
 [project.optional-dependencies]
 mcp = ["mcp[cli]>=2.0.0"]
 dev = ["pytest>=8.0", "mcp[cli]>=2.0.0"]
 
 [project.entry-points.pytest11]
 mcp_contract = "mcp_contract.plugin"
+
+[tool.hatch.version]
+path = "src/mcp_contract/__init__.py"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/mcp_contract"]

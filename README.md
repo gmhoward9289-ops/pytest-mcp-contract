@@ -7,10 +7,22 @@ This is **not** protocol conformance. It does not wrap `npx @modelcontextprotoco
 ## Install
 
 ```bash
-pip install -e ".[mcp]"
+pip install pytest-mcp-contract
+```
+
+For in-memory registry access against the MCP Python SDK:
+
+```bash
+pip install "pytest-mcp-contract[mcp]"
 ```
 
 The `mcp` extra pins the MCP Python SDK the same way swamp-ops does today: `mcp[cli]>=2.0.0` (SDK 2.x `MCPServer`).
+
+Develop from a git checkout:
+
+```bash
+pip install -e ".[mcp]"
+```
 
 ## Usage
 
