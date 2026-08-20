@@ -1,0 +1,4 @@
+henhouse>=0.1.2
+pytest-mcp-contract[mcp]>=0.1.5
+pytest-session-trace>=0.1.5
+pytest>=8.0

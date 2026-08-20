@@ -1,0 +1,38 @@
+{
+  "demo_enqueue": {
+    "properties": {
+      "task": {
+        "title": "Task",
+        "type": "string"
+      }
+    },
+    "required": [
+      "task"
+    ],
+    "title": "demo_enqueueArguments",
+    "type": "object"
+  },
+  "demo_search": {
+    "properties": {
+      "limit": {
+        "default": 5,
+        "title": "Limit",
+        "type": "integer"
+      },
+      "query": {
+        "title": "Query",
+        "type": "string"
+      }
+    },
+    "required": [
+      "query"
+    ],
+    "title": "demo_searchArguments",
+    "type": "object"
+  },
+  "demo_status": {
+    "properties": {},
+    "title": "demo_statusArguments",
+    "type": "object"
+  }
+}

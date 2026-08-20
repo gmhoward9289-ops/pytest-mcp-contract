@@ -112,6 +112,8 @@ bash packaging/publish-doctor.sh
 
 Use both in the same repo: registry correctness **and** agent behavior — still no LLM in CI. swamp-ops dogfoods the pair in `test_mcp_contract.py`, `test_session_trace.py`, and `docs/SESSION_TRACE.md`.
 
+Public starter (no private ops repo): [`examples/proof_stack/`](examples/proof_stack/) — synthetic JSONL, pinned schemas, and both test files in one folder.
+
 ## See also
 
 - [pytest-session-trace](https://github.com/gmhoward9289-ops/pytest-session-trace) — assert what an agent *called* in a saved JSONL session (pairs with this plugin: registry vs behavior)
