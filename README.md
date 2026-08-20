@@ -71,6 +71,15 @@ Refresh a snapshot from a live server module:
 python -m mcp_contract snapshot tests/fixtures/mcp_schemas.json --module swamp_ops.server
 ```
 
+## Proof stack (pair with pytest-session-trace)
+
+| Plugin | Asserts |
+| --- | --- |
+| **pytest-mcp-contract** (this repo) | MCP server registers the right tool names, annotations, input schemas, and handlers |
+| [pytest-session-trace](https://github.com/gmhoward9289-ops/pytest-session-trace) | A saved agent session (JSONL) actually called those tools in order |
+
+Use both in the same repo: registry correctness **and** agent behavior — still no LLM in CI. swamp-ops dogfoods the pair in `test_mcp_contract.py`, `test_session_trace.py`, and `docs/SESSION_TRACE.md`.
+
 ## See also
 
 - [pytest-session-trace](https://github.com/gmhoward9289-ops/pytest-session-trace) — assert what an agent *called* in a saved JSONL session (pairs with this plugin: registry vs behavior)
