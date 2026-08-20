@@ -11,7 +11,7 @@ This is **not** protocol conformance. It does not wrap `npx @modelcontextprotoco
 ```bash
 pip install pytest-mcp-contract
 # or pinned tag:
-pip install git+https://github.com/gmhoward9289-ops/pytest-mcp-contract@v0.1.4
+pip install git+https://github.com/gmhoward9289-ops/pytest-mcp-contract@v0.1.5
 ```
 
 For in-memory registry access against the MCP Python SDK:
@@ -92,6 +92,8 @@ Refresh a snapshot from a live server module:
 ```text
 python -m mcp_contract snapshot tests/fixtures/mcp_schemas.json --module swamp_ops.server
 ```
+
+On drift, failures show dotted field paths (`properties.repo.type`) and a unified diff — not two full JSON blobs.
 
 ### Publish health
 

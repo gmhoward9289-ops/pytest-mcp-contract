@@ -16,11 +16,12 @@ from .assert_mcp import (
 )
 from .schemas import (
     assert_tool_input_schemas_match,
+    format_tool_input_schema_drift,
     snapshot_tool_input_schemas,
     tool_input_schema,
 )
 
-__version__ = "0.1.4"
+__version__ = "0.1.5"
 
 __all__ = [
     "assert_call_equals",
@@ -32,6 +33,7 @@ __all__ = [
     "assert_tool_input_schemas_match",
     "assert_tools_named",
     "assert_tools_prefixed",
+    "format_tool_input_schema_drift",
     "non_readonly_tool_names",
     "snapshot_tool_input_schemas",
     "tool_input_schema",

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import difflib
 import json
 from typing import Any
 
@@ -29,6 +30,51 @@ def _canonical(schema: dict[str, Any]) -> str:
     return json.dumps(schema, sort_keys=True, indent=2)
 
 
+def _field_changes(expected: Any, actual: Any, path: str = "$") -> list[str]:
+    """Return dotted paths where ``actual`` differs from ``expected``."""
+    if expected == actual:
+        return []
+    if isinstance(expected, dict) and isinstance(actual, dict):
+        lines: list[str] = []
+        for key in sorted(set(expected) | set(actual)):
+            sub = f"{path}.{key}" if path != "$" else key
+            if key not in expected:
+                lines.append(f"+ {sub}")
+            elif key not in actual:
+                lines.append(f"- {sub}")
+            else:
+                lines.extend(_field_changes(expected[key], actual[key], sub))
+        return lines
+    if isinstance(expected, list) and isinstance(actual, list):
+        if expected != actual:
+            return [f"~ {path}: list changed"]
+        return []
+    return [f"~ {path}: {actual!r} (expected {expected!r})"]
+
+
+def format_tool_input_schema_drift(
+    expected: dict[str, Any],
+    actual: dict[str, Any],
+) -> str:
+    """Human-readable field summary plus unified diff for schema drift."""
+    changes = _field_changes(expected, actual)
+    diff = difflib.unified_diff(
+        _canonical(expected).splitlines(),
+        _canonical(actual).splitlines(),
+        fromfile="expected",
+        tofile="actual",
+        lineterm="",
+    )
+    parts: list[str] = []
+    if changes:
+        parts.append("changes:\n  " + "\n  ".join(changes))
+    else:
+        parts.append("changes: (structural mismatch without path detail)")
+    parts.append("")
+    parts.extend(diff)
+    return "\n".join(parts).rstrip()
+
+
 def assert_tool_input_schemas_match(
     server: Any,
     expected: dict[str, dict[str, Any]],
@@ -49,8 +95,7 @@ def assert_tool_input_schemas_match(
         if _canonical(actual[name]) != _canonical(expected[name]):
             errors.append(
                 f"{name}: schema drift\n"
-                f"expected:\n{_canonical(expected[name])}\n"
-                f"actual:\n{_canonical(actual[name])}"
+                f"{format_tool_input_schema_drift(expected[name], actual[name])}"
             )
     if errors:
         raise AssertionError("\n---\n".join(errors))

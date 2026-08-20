@@ -5,8 +5,7 @@
 # stale if OIDC was misconfigured once. This asks the registry, on a schedule
 # and after each release.
 #
-# Channels for pytest-mcp-contract: git tag + PyPI only (no npm/tap/winget).
-# release.yml does not attach GitHub Release assets; PyPI is the install path.
+# Channels for pytest-mcp-contract: git tag + PyPI + GitHub Release assets.
 set -u
 
 OWNER=gmhoward9289-ops
@@ -15,8 +14,9 @@ DIST=pytest-mcp-contract
 ROOT=$(cd "$(dirname "$0")/.." && pwd)
 
 GRACE_MIN=${PUBLISH_DOCTOR_GRACE_MIN:-60}
+if command -v python3 >/dev/null 2>&1; then PY=python3; else PY=python; fi
 
-VERSION=$(PYTHONPATH="$ROOT/src" python3 -c 'from mcp_contract import __version__; print(__version__)' 2>/dev/null)
+VERSION=$(sed -n 's/^__version__ = "\(.*\)"/\1/p' "$ROOT/src/mcp_contract/__init__.py" | head -1)
 if [ -z "$VERSION" ]; then
   echo "FATAL: could not read __version__ from src/mcp_contract/__init__.py" >&2
   exit 2
@@ -47,7 +47,7 @@ echo
 published=$(gh release view "v$VERSION" --repo "$REPO" --json publishedAt \
               --jq '.publishedAt' 2>/dev/null)
 if [ -n "${published:-}" ]; then
-  age_min=$(python3 -c '
+  age_min=$("$PY" -c '
 import datetime, sys
 t = datetime.datetime.strptime(sys.argv[1], "%Y-%m-%dT%H:%M:%SZ")
 t = t.replace(tzinfo=datetime.timezone.utc)
@@ -83,9 +83,9 @@ pypi=$(curl -sf "https://pypi.org/pypi/$DIST/json" 2>/dev/null)
 if [ -z "$pypi" ]; then
   todo pypi "nothing on PyPI as $DIST -- pending publisher at https://pypi.org/manage/account/publishing/ (owner $OWNER, repo pytest-mcp-contract, workflow release.yml, environment pypi)"
 else
-  pypi_ver=$(printf '%s' "$pypi" | python3 -c 'import json,sys; print(json.load(sys.stdin)["info"]["version"])' 2>/dev/null)
+  pypi_ver=$(printf '%s' "$pypi" | "$PY" -c 'import json,sys; print(json.load(sys.stdin)["info"]["version"])' 2>/dev/null)
   if [ "${pypi_ver:-}" = "$VERSION" ]; then
-    names=$(printf '%s' "$pypi" | python3 -c '
+    names=$(printf '%s' "$pypi" | "$PY" -c '
 import json, sys
 print(" ".join(f["filename"] for f in json.load(sys.stdin)["urls"]))' 2>/dev/null)
     want_whl="pytest_mcp_contract-$VERSION-py3-none-any.whl"

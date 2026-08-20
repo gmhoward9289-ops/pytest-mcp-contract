@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.5
+
+- `format_tool_input_schema_drift` — field-level change paths plus unified diff on schema mismatch
+- `publish-doctor.sh` reads `__version__` from `src/mcp_contract/__init__.py` (Windows Git Bash friendly)
+
 ## 0.1.4
 
 - `assert_tools_prefixed` — pin a namespace prefix on every tool name
