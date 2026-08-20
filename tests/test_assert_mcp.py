@@ -9,9 +9,12 @@ import pytest
 from mcp_contract.assert_mcp import (
     assert_call_equals,
     assert_non_readonly_tools_named,
+    assert_non_readonly_tools_non_destructive,
     assert_subset_named,
+    assert_tool_annotated_non_destructive,
     assert_tool_annotated_read_only,
     assert_tools_named,
+    assert_tools_prefixed,
     non_readonly_tool_names,
 )
 
@@ -106,3 +109,51 @@ def test_assert_non_readonly_tools_named_reports_missing_and_extra():
     msg = str(exc.value)
     assert "write_b" in msg
     assert "extra=" in msg
+
+
+def test_assert_tools_prefixed_passes():
+    assert_tools_prefixed({"swamp_a", "swamp_b"}, "swamp_")
+
+
+def test_assert_tools_prefixed_reports_bad_names():
+    with pytest.raises(AssertionError, match="swamp_"):
+        assert_tools_prefixed({"swamp_ok", "other"}, "swamp_")
+
+
+def test_assert_tool_annotated_non_destructive():
+    assert_tool_annotated_non_destructive(
+        SimpleNamespace(annotations=SimpleNamespace(destructiveHint=False))
+    )
+    assert_tool_annotated_non_destructive({"destructiveHint": False})
+
+
+def test_assert_tool_annotated_non_destructive_rejects_destructive():
+    with pytest.raises(AssertionError, match="destructiveHint=False"):
+        assert_tool_annotated_non_destructive(
+            SimpleNamespace(annotations=SimpleNamespace(destructiveHint=True))
+        )
+
+
+def test_assert_non_readonly_tools_non_destructive():
+    tools = {
+        "write": SimpleNamespace(
+            annotations=SimpleNamespace(
+                readOnlyHint=False,
+                destructiveHint=False,
+            )
+        ),
+    }
+    assert_non_readonly_tools_non_destructive(tools, {"write"})
+
+
+def test_assert_non_readonly_tools_non_destructive_rejects_destructive_write():
+    tools = {
+        "write": SimpleNamespace(
+            annotations=SimpleNamespace(
+                readOnlyHint=False,
+                destructiveHint=True,
+            )
+        ),
+    }
+    with pytest.raises(AssertionError, match="destructiveHint=False"):
+        assert_non_readonly_tools_non_destructive(tools, {"write"})

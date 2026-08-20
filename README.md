@@ -11,7 +11,7 @@ This is **not** protocol conformance. It does not wrap `npx @modelcontextprotoco
 ```bash
 pip install pytest-mcp-contract
 # or pinned tag:
-pip install git+https://github.com/gmhoward9289-ops/pytest-mcp-contract@v0.1.3
+pip install git+https://github.com/gmhoward9289-ops/pytest-mcp-contract@v0.1.4
 ```
 
 For in-memory registry access against the MCP Python SDK:
@@ -47,6 +47,24 @@ def test_tool_names(mcp_server):
 ```
 
 `list_tool_names` reads `MCPServer._tool_manager._tools` (or `tool_manager._tools`). That is the same private registry swamp-ops already inspects. If the shape is unknown, the helper **fails** instead of skipping — registry drift is what this plugin is for.
+
+Pin write tools and their safety annotations:
+
+```python
+from mcp_contract.assert_mcp import (
+    assert_non_readonly_tools_non_destructive,
+    assert_tools_prefixed,
+)
+from mcp_contract.session import list_tool_names, tool_registry
+
+def test_write_tools(mcp_server):
+    names = list_tool_names(mcp_server)
+    assert_tools_prefixed(names, "swamp_")
+    assert_non_readonly_tools_non_destructive(
+        tool_registry(mcp_server),
+        {"swamp_enqueue_job", "swamp_post_discussion", ...},
+    )
+```
 
 Calls go through the registered `Tool.fn` handler, not `mcp.Client`. v1 is in-memory only. Async handlers are supported: `call_registered_tool` uses `asyncio.run`; use `acall_registered_tool` inside async tests.
 

@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.4
+
+- `assert_tools_prefixed` — pin a namespace prefix on every tool name
+- `assert_tool_annotated_non_destructive`, `assert_non_readonly_tools_non_destructive` — write tools must not be marked destructive
+- `release.yml` attaches wheel/sdist to GitHub Releases on tag
+
 ## 0.1.3
 
 - `assert_tool_input_schemas_match`, `snapshot_tool_input_schemas`, `tool_input_schema`
