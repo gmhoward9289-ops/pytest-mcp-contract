@@ -32,5 +32,5 @@ dev = ["pytest>=8.0", "mcp[cli]>=2.0.0"]
 packages = ["src/mcp_contract"]
 
 [tool.pytest.ini_options]
-pythonpath = ["src"]
+pythonpath = ["src", "tests"]
 testpaths = ["tests"]
