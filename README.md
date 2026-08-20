@@ -71,6 +71,14 @@ Refresh a snapshot from a live server module:
 python -m mcp_contract snapshot tests/fixtures/mcp_schemas.json --module swamp_ops.server
 ```
 
+### Publish health
+
+After each tag release, CI runs `packaging/publish-doctor.sh` (also daily) to verify PyPI serves the same version as `src/mcp_contract/__init__.py`. Local check:
+
+```bash
+bash packaging/publish-doctor.sh
+```
+
 ## Proof stack (pair with pytest-session-trace)
 
 | Plugin | Asserts |
