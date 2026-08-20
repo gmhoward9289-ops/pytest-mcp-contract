@@ -44,10 +44,11 @@ def test_tool_names(mcp_server):
 
 `list_tool_names` reads `MCPServer._tool_manager._tools` (or `tool_manager._tools`). That is the same private registry swamp-ops already inspects. If the shape is unknown, the helper **fails** instead of skipping — registry drift is what this plugin is for.
 
-Calls go through the registered `Tool.fn` handler, not `mcp.Client`. v1 is in-memory only.
+Calls go through the registered `Tool.fn` handler, not `mcp.Client`. v1 is in-memory only. Async handlers are supported: `call_registered_tool` uses `asyncio.run`; use `acall_registered_tool` inside async tests.
 
 ## See also
 
+- [pytest-session-trace](https://github.com/gmhoward9289-ops/pytest-session-trace) — assert what an agent *called* in a saved JSONL session (pairs with this plugin: registry vs behavior)
 - [MCP Python SDK testing](https://github.com/modelcontextprotocol/python-sdk)
 - FastMCP client/session docs in that SDK
 

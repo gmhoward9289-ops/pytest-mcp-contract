@@ -12,7 +12,7 @@ from .assert_mcp import (
     non_readonly_tool_names,
 )
 
-__version__ = "0.1.1"
+__version__ = "0.1.2"
 
 __all__ = [
     "assert_call_equals",

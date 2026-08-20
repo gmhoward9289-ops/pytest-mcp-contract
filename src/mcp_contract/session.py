@@ -9,6 +9,7 @@
 
 from __future__ import annotations
 
+import asyncio
 import inspect
 from typing import Any
 
@@ -42,14 +43,35 @@ def get_registered_tool(server: Any, name: str) -> Any:
 
 
 def call_registered_tool(server: Any, name: str, **kwargs: Any) -> Any:
+    """Invoke a registered Tool.fn handler (sync or async).
+
+    Async handlers are awaited via ``asyncio.run`` — fine for ordinary pytest
+    tests. From inside a running event loop, use ``acall_registered_tool``.
+    """
     tool = get_registered_tool(server, name)
     fn = getattr(tool, "fn", None)
     if fn is None or not callable(fn):
         raise RuntimeError(f"no callable handler (Tool.fn) on registered tool {name!r}")
     result = fn(**kwargs)
     if inspect.isawaitable(result):
-        raise TypeError(
-            f"tool {name!r} handler is async; await it in an async test "
-            "or use a synchronous wrapper"
+        try:
+            asyncio.get_running_loop()
+        except RuntimeError:
+            return asyncio.run(result)
+        raise RuntimeError(
+            f"tool {name!r} handler is async and an event loop is already running; "
+            "use acall_registered_tool in async tests"
         )
+    return result
+
+
+async def acall_registered_tool(server: Any, name: str, **kwargs: Any) -> Any:
+    """Await a registered Tool.fn handler (sync or async)."""
+    tool = get_registered_tool(server, name)
+    fn = getattr(tool, "fn", None)
+    if fn is None or not callable(fn):
+        raise RuntimeError(f"no callable handler (Tool.fn) on registered tool {name!r}")
+    result = fn(**kwargs)
+    if inspect.isawaitable(result):
+        return await result
     return result

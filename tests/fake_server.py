@@ -15,3 +15,16 @@ server = MCPServer(name="fake", title="Fake", version="0.0.1")
 )
 def echo(text: str) -> str:
     return text
+
+
+@server.tool(
+    name="async_echo",
+    annotations=ToolAnnotations(
+        readOnlyHint=True,
+        destructiveHint=False,
+        openWorldHint=False,
+        idempotentHint=True,
+    ),
+)
+async def async_echo(text: str) -> str:
+    return text

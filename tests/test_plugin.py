@@ -13,4 +13,4 @@ def mcp_server():
 
 
 def test_mcp_tool_names_from_plugin(mcp_tool_names):
-    assert mcp_tool_names == {"echo"}
+    assert mcp_tool_names == {"async_echo", "echo"}

@@ -11,7 +11,14 @@ import fake_server
 
 
 def test_list_tool_names_echo():
-    assert list_tool_names(fake_server.server) == {"echo"}
+    assert list_tool_names(fake_server.server) == {"async_echo", "echo"}
+
+
+def test_async_echo_handler_roundtrip():
+    assert_call_equals(
+        call_registered_tool(fake_server.server, "async_echo", text="ping"),
+        "ping",
+    )
 
 
 def test_echo_handler_roundtrip():
