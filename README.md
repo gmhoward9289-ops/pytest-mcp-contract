@@ -1,6 +1,8 @@
 # pytest-mcp-contract
 
-Pytest helpers for **domain MCP tool contracts**: registered names, annotations, and in-memory handler calls.
+[![Discussions](https://img.shields.io/github/discussions/gmhoward9289-ops/pytest-mcp-contract)](https://github.com/gmhoward9289-ops/pytest-mcp-contract/discussions)
+
+Pytest helpers for **domain MCP tool contracts**: registered names, annotations, input schemas, and in-memory handler calls.
 
 This is **not** protocol conformance. It does not wrap `npx @modelcontextprotocol/conformance`, does not ship security payloads, and does not run an LLM in CI.
 
@@ -8,6 +10,8 @@ This is **not** protocol conformance. It does not wrap `npx @modelcontextprotoco
 
 ```bash
 pip install pytest-mcp-contract
+# or pinned tag:
+pip install git+https://github.com/gmhoward9289-ops/pytest-mcp-contract@v0.1.3
 ```
 
 For in-memory registry access against the MCP Python SDK:
