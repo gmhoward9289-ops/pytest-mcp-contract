@@ -1,0 +1,36 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "pytest-mcp-contract"
+version = "0.1.0"
+description = "pytest plugin for domain MCP tool contracts (names, annotations, call results). Not protocol conformance."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { file = "LICENSE" }
+authors = [{ name = "George M. Howard", email = "dev@swamplink.com" }]
+keywords = ["pytest", "mcp", "model-context-protocol", "testing"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Framework :: Pytest",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: Apache Software License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Software Development :: Testing",
+]
+dependencies = ["pytest>=8.0"]
+
+[project.optional-dependencies]
+mcp = ["mcp[cli]>=2.0.0"]
+dev = ["pytest>=8.0", "mcp[cli]>=2.0.0"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/mcp_contract"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
