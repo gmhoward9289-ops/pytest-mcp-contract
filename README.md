@@ -46,6 +46,31 @@ def test_tool_names(mcp_server):
 
 Calls go through the registered `Tool.fn` handler, not `mcp.Client`. v1 is in-memory only. Async handlers are supported: `call_registered_tool` uses `asyncio.run`; use `acall_registered_tool` inside async tests.
 
+### Input schema snapshots
+
+Pin tool input JSON schemas and fail CI on accidental drift:
+
+```python
+import json
+from pathlib import Path
+from mcp_contract.schemas import assert_tool_input_schemas_match
+
+@pytest.fixture
+def mcp_server():
+    from swamp_ops.server import server
+    return server
+
+def test_schemas(mcp_server):
+    expected = json.loads(Path("tests/fixtures/mcp_schemas.json").read_text())
+    assert_tool_input_schemas_match(mcp_server, expected, tools=set(expected))
+```
+
+Refresh a snapshot from a live server module:
+
+```text
+python -m mcp_contract snapshot tests/fixtures/mcp_schemas.json --module swamp_ops.server
+```
+
 ## See also
 
 - [pytest-session-trace](https://github.com/gmhoward9289-ops/pytest-session-trace) — assert what an agent *called* in a saved JSONL session (pairs with this plugin: registry vs behavior)
